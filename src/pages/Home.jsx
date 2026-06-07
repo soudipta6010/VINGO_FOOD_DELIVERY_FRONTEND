@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import UserDashBoard from "../components/userDashBoard";
-import OwnerDashBoard from "../components/OwnerDashBoard";
-import DeliveryBoy from "../components/DeliveryBoy";
+import UserDashBoard from "../components/UserDashBoard.jsx";
+import OwnerDashBoard from "../components/OwnerDashBoard.jsx";
+import DeliveryBoy from "../components/DeliveryBoy.jsx";
 
 function Home() {
   const { userData } = useSelector((state) => state.user);

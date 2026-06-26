@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 function Nav() {
   
-  const { userData, currentCity } = useSelector((state) => state.user);
+  const { userData, currentCity,cartItems } = useSelector((state) => state.user);
   const { myShopData } = useSelector((state) => state.owner);
 
   const [showInfo, setShowInfo] = useState(false);
@@ -139,7 +139,7 @@ function Nav() {
             <div className="relative cursor-pointer">
               <FiShoppingCart size={25} className="text-[#ff4d2d]" />
               <span className="absolute -right-2.5 -top-3 text-[#ff4d2d] ">
-                0
+                {cartItems.length}
               </span>
             </div>
 

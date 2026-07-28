@@ -3,7 +3,7 @@ import { FaMinus } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { CiTrash } from "react-icons/ci";
 import { useDispatch} from "react-redux";
-import { updateQuantity } from "../redux/userSlice";
+import { removeCartItem, updateQuantity } from "../redux/userSlice";
 
 function CartItemCard({ data }) {
   
@@ -51,7 +51,7 @@ function CartItemCard({ data }) {
         >
           <FaPlus size={12} />
         </button>
-        <button className="p-2 cursor-pointer bg-red-100 text-red-600 rounded-full hover:bg-red-200">
+        <button className="p-2 cursor-pointer bg-red-100 text-red-600 rounded-full hover:bg-red-200" onClick={()=> dispatch(removeCartItem(data.id))}>
           <CiTrash size={18} />
         </button>
       </div>

@@ -114,8 +114,8 @@ function Nav() {
             )}
 
             {/* Pending Orders */}
-            {userData.role == "user" && (
-              <div className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium ">
+            {userData.role == "owner" && (
+              <div className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium " onClick={()=> navigate("/my-orders")}>
                 <TbReceiptRupeeFilled size={20} />
                 <span>My Orders</span>
                 <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
@@ -124,7 +124,7 @@ function Nav() {
               </div>
             )}
             {/* for small screen */}
-            <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium ">
+            <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium " onClick={()=> navigate("/my-orders")}>
               <TbReceiptRupeeFilled size={20} />
 
               <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
@@ -143,7 +143,7 @@ function Nav() {
               </span>
             </div>
 
-            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium  ">
+            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium  " onClick={()=> navigate("/my-orders")}>
               My order
             </button>
           </>
@@ -161,7 +161,7 @@ function Nav() {
         {showInfo && (
           <div className="fixed top-20 right-2.5 px-2.5 py-2.5 md:right-[10%] lg:right-[25%] w-45 bg-white shadow-2xl rounded-xl flex flex-col gap-2.5 z-9999 ">
             <div className="text-[17px] font-semibold">{userData.fullName}</div>
-            <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer ">
+            <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer " onClick={()=> navigate("/my-orders")}>
               My Orders
             </div>
             <div

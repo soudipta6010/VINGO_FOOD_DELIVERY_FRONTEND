@@ -10,7 +10,8 @@ const userSlice = createSlice({
     shopInMyCity: null,
     itemsInMyCity: null,
     cartItems: [],
-    totalAmount: 0
+    totalAmount: 0,
+    myOrders: null,
   },
   reducers: {
     setUserData: (state, action) => {
@@ -33,17 +34,17 @@ const userSlice = createSlice({
     },
     addToCart: (state, action) => {
       const cartItem = action.payload;
-      const existingItem = state.cartItems.find(
-        (i) => i.id === cartItem.id
-      );
+      const existingItem = state.cartItems.find((i) => i.id === cartItem.id);
       if (existingItem) {
         existingItem.quantity += cartItem.quantity;
       } else {
         state.cartItems.push(cartItem);
       }
 
-      state.totalAmount = state.cartItems.reduce((sum, i)=> sum + i.price * i.quantity, 0)
-
+      state.totalAmount = state.cartItems.reduce(
+        (sum, i) => sum + i.price * i.quantity,
+        0
+      );
     },
     updateQuantity: (state, action) => {
       const { id, quantity } = action.payload;
@@ -51,15 +52,24 @@ const userSlice = createSlice({
       if (item && quantity >= 1) {
         item.quantity = quantity;
       }
-      state.totalAmount = state.cartItems.reduce((sum, i)=> sum + i.price * i.quantity, 0)
+      state.totalAmount = state.cartItems.reduce(
+        (sum, i) => sum + i.price * i.quantity,
+        0
+      );
     },
 
     removeCartItem: (state, action) => {
-      state.cartItems = state.cartItems.filter(i => i.id !== action.payload);
-      state.totalAmount = state.cartItems.reduce((sum, i)=> sum + i.price * i.quantity, 0)
-      
-    }
-  },
+      state.cartItems = state.cartItems.filter((i) => i.id !== action.payload);
+      state.totalAmount = state.cartItems.reduce(
+        (sum, i) => sum + i.price * i.quantity,
+        0
+      );
+    },
+    setMyOrders: (state, action) => {
+      state.myOrders = action.payload;
+    },
+
+  }
 });
 
 export const {
@@ -71,6 +81,7 @@ export const {
   setItemsInMyCity,
   addToCart,
   updateQuantity,
-  removeCartItem
+  removeCartItem,
+  setMyOrders,
 } = userSlice.actions;
 export default userSlice.reducer;

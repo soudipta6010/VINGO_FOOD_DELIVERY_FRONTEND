@@ -134,14 +134,16 @@ function Nav() {
           </>
         ) : (
           <>
-            {/* cart */}
 
-            <div className="relative cursor-pointer" onClick={()=> navigate("/cart")}>
+
+            {/* cart */}
+            {userData.role == "user" && <div className="relative cursor-pointer" onClick={()=> navigate("/cart")}>
               <FiShoppingCart size={25} className="text-[#ff4d2d]" />
               <span className="absolute -right-2.5 -top-3 text-[#ff4d2d] ">
                 {cartItems.length}
               </span>
-            </div>
+            </div> }
+            
 
             <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium  " onClick={()=> navigate("/my-orders")}>
               My order
@@ -159,7 +161,7 @@ function Nav() {
 
         {/* pop up */}
         {showInfo && (
-          <div className="fixed top-20 right-2.5 px-2.5 py-2.5 md:right-[10%] lg:right-[25%] w-45 bg-white shadow-2xl rounded-xl flex flex-col gap-2.5 z-9999 ">
+          <div className={`fixed top-20 right-2.5 px-2.5 py-2.5 ${userData.role == "deliveryBoy" ? "md:right-[20%] lg:right-[35%]" : "md:right-[10%] lg:right-[25%]"}  w-45 bg-white shadow-2xl rounded-xl flex flex-col gap-2.5 z-9999 `}>
             <div className="text-[17px] font-semibold">{userData.fullName}</div>
             <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer " onClick={()=> navigate("/my-orders")}>
               My Orders

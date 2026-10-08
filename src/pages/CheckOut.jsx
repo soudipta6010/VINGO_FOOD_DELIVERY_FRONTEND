@@ -252,7 +252,7 @@ function CheckOut() {
           </div>
         </section>
         <button
-          className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold"
+          className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer"
           onClick={handelPlaceOrder}
         >
           {paymentMethod == "cod" ? "Place Order" : "Pay & Place Order"}

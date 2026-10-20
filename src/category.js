@@ -20,7 +20,7 @@ const categories = [
     {"category": "South Indian", "image": image7},
     {"category": "North Indian", "image": image8},
     {"category": "Chinese", "image": image9},
-    {"category": "Fast Food", "image": image10},
+    {"category": "Fast Foods", "image": image10},
     {"category": "All", "image": image11},
 ]
 

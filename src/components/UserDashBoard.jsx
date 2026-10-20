@@ -8,13 +8,30 @@ import { useSelector } from "react-redux";
 import FoodCard from "./FoodCard.jsx";
 
 function UserDashBoard() {
-  const { currentCity, shopInMyCity, itemsInMyCity } = useSelector((state) => state.user);
+  const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(
+    (state) => state.user
+  );
   const cateScrollRef = useRef();
   const shopScrollRef = useRef();
   const [showLeftCateButton, setShowLeftCateButton] = useState(false);
   const [showRightCateButton, setShowRightCateButton] = useState(true);
   const [showLeftShopButton, setShowLeftShopButton] = useState(false);
   const [showRightShopButton, setShowRightShopButton] = useState(true);
+  const [updatedItemsList, setUpdatedItemList] = useState([]);
+
+  const handelFilterByCategory = (category) => {
+    if (category == "All") {
+      setUpdatedItemList(itemsInMyCity);
+    } else {
+      const filteredList = itemsInMyCity?.filter((i) => i.category === category);
+      setUpdatedItemList(filteredList);
+    }
+  };
+
+  useEffect(() => {
+    setUpdatedItemList(itemsInMyCity);
+  }, [itemsInMyCity]);
+
   const updateButton = (ref, setLeftButton, setRightButton) => {
     const element = ref.current;
     if (element) {
@@ -106,6 +123,7 @@ function UserDashBoard() {
                 name={cate.category}
                 image={cate.image}
                 key={index}
+                onClick = {()=> handelFilterByCategory(cate.category)}
               />
             ))}
           </div>
@@ -160,14 +178,16 @@ function UserDashBoard() {
           Suggested Food Items
         </h1>
         <div className="w-full h-auto flex flex-wrap gap-5 justify-center ">
-            {itemsInMyCity?.map((item,index)=>(
-              <FoodCard key={index} data={item} />
-            ))}
+          {updatedItemsList?.map((item, index) => (
+            <FoodCard key={index} data={item} />
+          ))}
         </div>
       </div>
-
     </div>
   );
 }
 
 export default UserDashBoard;
+
+
+// 57min

@@ -6,6 +6,7 @@ import { FaCircleChevronLeft } from "react-icons/fa6";
 import { FaCircleChevronRight } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import FoodCard from "./FoodCard.jsx";
+import { useNavigate } from "react-router-dom";
 
 function UserDashBoard() {
   const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(
@@ -13,11 +14,13 @@ function UserDashBoard() {
   );
   const cateScrollRef = useRef();
   const shopScrollRef = useRef();
+  const navigate = useNavigate();
   const [showLeftCateButton, setShowLeftCateButton] = useState(false);
   const [showRightCateButton, setShowRightCateButton] = useState(true);
   const [showLeftShopButton, setShowLeftShopButton] = useState(false);
   const [showRightShopButton, setShowRightShopButton] = useState(true);
   const [updatedItemsList, setUpdatedItemList] = useState([]);
+  
 
   const handelFilterByCategory = (category) => {
     if (category == "All") {
@@ -158,7 +161,7 @@ function UserDashBoard() {
             ref={shopScrollRef}
           >
             {shopInMyCity?.map((shop, index) => (
-              <CategoryCard name={shop.name} image={shop.image} key={index} />
+              <CategoryCard name={shop.name} image={shop.image} key={index} onClick={()=>navigate(`/shop/${shop._id}`)}/>
             ))}
           </div>
           {showRightShopButton && (
@@ -190,4 +193,3 @@ function UserDashBoard() {
 export default UserDashBoard;
 
 
-// 57min

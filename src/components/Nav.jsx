@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
 import { FiShoppingCart } from "react-icons/fi";
@@ -8,16 +8,18 @@ import { TbReceiptRupeeFilled } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { setUserData } from "../redux/userSlice";
+import { setSearchItems, setUserData } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 function Nav() {
-  
-  const { userData, currentCity,cartItems } = useSelector((state) => state.user);
+  const { userData, currentCity, cartItems } = useSelector(
+    (state) => state.user
+  );
   const { myShopData } = useSelector((state) => state.owner);
 
   const [showInfo, setShowInfo] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handelLogOut = async () => {
@@ -31,6 +33,26 @@ function Nav() {
     }
   };
 
+  const handelSearchItems = async () => {
+    try {
+      const result = await axios.get(
+        `${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`,
+        { withCredentials: true }
+      );
+      dispatch(setSearchItems(result.data))
+    } catch (error) {
+      console.log("search item error", error);
+    }
+  };
+
+  useEffect(() => {
+    if(query){
+      handelSearchItems();
+    }else{
+      dispatch(setSearchItems(null))
+    }
+  }, [query]);
+
   return (
     <div className="w-full h-20 flex items-center justify-between md:justify-center gap-7.5 px-5 fixed top-0 z-9999 bg-[#fff9f6] overflow-visible ">
       {/* For small devices- search bar */}
@@ -42,7 +64,7 @@ function Nav() {
             <div className="w-[80%] truncate text-gray-600 ">{currentCity}</div>
           </div>
 
-          {/* Search */}
+          {/* Search for small screen*/}
           <div className="w-[80%] flex items-center gap-2.5 ">
             <IoIosSearch size={25} className="text-[#ff4d2d]" />
             <input
@@ -51,6 +73,8 @@ function Nav() {
               id=""
               placeholder="search delicious food..."
               className="px-2.5 text-gray-700 outline-0 w-full "
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
             />
           </div>
         </div>
@@ -66,7 +90,7 @@ function Nav() {
             <div className="w-[80%] truncate text-gray-600 ">{currentCity}</div>
           </div>
 
-          {/* Search */}
+          {/* Search for large screen*/}
           <div className="w-[80%] flex items-center gap-2.5 ">
             <IoIosSearch size={25} className="text-[#ff4d2d]" />
             <input
@@ -75,12 +99,14 @@ function Nav() {
               id=""
               placeholder="search delicious food..."
               className="px-2.5 text-gray-700 outline-0 w-full "
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
             />
           </div>
         </div>
       )}
 
-      <div className="flex items-center gap-4 mx-8">
+      <div className="flex items-center gap-4 mx-8 cursor-pointer">
         {/* search icon small devices */}
         {userData.role == "user" &&
           (showSearch ? (
@@ -102,12 +128,18 @@ function Nav() {
           <>
             {myShopData && (
               <>
-              {/* For large devices */}
-                <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d] " onClick={()=> navigate("/add-item")}>
+                {/* For large devices */}
+                <button
+                  className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d] "
+                  onClick={() => navigate("/add-item")}
+                >
                   <FaPlus size={20} /> <span>Add Food Item</span>
                 </button>
                 {/* For small devices */}
-                <button className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d] " onClick={()=> navigate("/add-item")}>
+                <button
+                  className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d] "
+                  onClick={() => navigate("/add-item")}
+                >
                   <FaPlus size={20} />
                 </button>
               </>
@@ -115,7 +147,10 @@ function Nav() {
 
             {/* Pending Orders */}
             {userData.role == "owner" && (
-              <div className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium " onClick={()=> navigate("/my-orders")}>
+              <div
+                className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium "
+                onClick={() => navigate("/my-orders")}
+              >
                 <TbReceiptRupeeFilled size={20} />
                 <span>My Orders</span>
                 <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
@@ -124,7 +159,10 @@ function Nav() {
               </div>
             )}
             {/* for small screen */}
-            <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium " onClick={()=> navigate("/my-orders")}>
+            <div
+              className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium "
+              onClick={() => navigate("/my-orders")}
+            >
               <TbReceiptRupeeFilled size={20} />
 
               <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
@@ -134,18 +172,23 @@ function Nav() {
           </>
         ) : (
           <>
-
-
             {/* cart */}
-            {userData.role == "user" && <div className="relative cursor-pointer" onClick={()=> navigate("/cart")}>
-              <FiShoppingCart size={25} className="text-[#ff4d2d]" />
-              <span className="absolute -right-2.5 -top-3 text-[#ff4d2d] ">
-                {cartItems.length}
-              </span>
-            </div> }
-            
+            {userData.role == "user" && (
+              <div
+                className="relative cursor-pointer"
+                onClick={() => navigate("/cart")}
+              >
+                <FiShoppingCart size={25} className="text-[#ff4d2d]" />
+                <span className="absolute -right-2.5 -top-3 text-[#ff4d2d] ">
+                  {cartItems.length}
+                </span>
+              </div>
+            )}
 
-            <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium  " onClick={()=> navigate("/my-orders")}>
+            <button
+              className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium cursor-pointer"
+              onClick={() => navigate("/my-orders")}
+            >
               My order
             </button>
           </>
@@ -161,9 +204,18 @@ function Nav() {
 
         {/* pop up */}
         {showInfo && (
-          <div className={`fixed top-20 right-2.5 px-2.5 py-2.5 ${userData.role == "deliveryBoy" ? "md:right-[20%] lg:right-[35%]" : "md:right-[10%] lg:right-[25%]"}  w-45 bg-white shadow-2xl rounded-xl flex flex-col gap-2.5 z-9999 `}>
+          <div
+            className={`fixed top-20 right-2.5 px-2.5 py-2.5 ${
+              userData.role == "deliveryBoy"
+                ? "md:right-[20%] lg:right-[35%]"
+                : "md:right-[10%] lg:right-[25%]"
+            }  w-45 bg-white shadow-2xl rounded-xl flex flex-col gap-2.5 z-9999 `}
+          >
             <div className="text-[17px] font-semibold">{userData.fullName}</div>
-            <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer " onClick={()=> navigate("/my-orders")}>
+            <div
+              className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer "
+              onClick={() => navigate("/my-orders")}
+            >
               My Orders
             </div>
             <div

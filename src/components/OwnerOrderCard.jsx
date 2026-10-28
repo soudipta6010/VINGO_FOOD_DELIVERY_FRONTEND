@@ -34,6 +34,11 @@ function OwnerOrderCard({ data }) {
         <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
           <MdPhone /> <span>{data.user.mobile}</span>
         </p>
+        {data.paymentMethod == "online" ? (
+          <p className="gap-2 text-sm text-gray-600">Payment: {data.payment ? "true" : "false"}</p>
+        ) : (
+          <p className="gap-2 text-sm text-gray-600">Payment Method: {data.paymentMethod}</p>
+        )}
       </div>
 
       <div className="flex items-start flex-col gap-2 text-gray-600 text-sm ">
@@ -91,7 +96,11 @@ function OwnerOrderCard({ data }) {
 
       {data.shopOrders.status == "out for delivery" && (
         <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
-          {data.shopOrders.assignedDeliveryBoy ? <p>Assigned Delivery Boy: </p> : <p>Available Delivery Boy: </p> } 
+          {data.shopOrders.assignedDeliveryBoy ? (
+            <p>Assigned Delivery Boy: </p>
+          ) : (
+            <p>Available Delivery Boy: </p>
+          )}
           {availableBoys.length > 0 ? (
             availableBoys.map((b, index) => (
               <div className="text-gray-500">
@@ -99,10 +108,13 @@ function OwnerOrderCard({ data }) {
               </div>
             ))
           ) : data.shopOrders.assignedDeliveryBoy ? (
-            <div>{data.shopOrders.assignedDeliveryBoy.fullName} - {data.shopOrders.assignedDeliveryBoy.mobile} </div>
-          ) : 
+            <div>
+              {data.shopOrders.assignedDeliveryBoy.fullName} -{" "}
+              {data.shopOrders.assignedDeliveryBoy.mobile}{" "}
+            </div>
+          ) : (
             <div>Waiting for delivery boy to accept </div>
-          }
+          )}
         </div>
       )}
 

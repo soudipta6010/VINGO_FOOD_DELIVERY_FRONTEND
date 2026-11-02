@@ -124,7 +124,7 @@ const openRazorpayWindow = (orderId, razorOrder) =>{
         navigate("/order-placed");
       } catch (error) {
         console.log(error);
-      } //2.39min
+      } 
     }
   }
 

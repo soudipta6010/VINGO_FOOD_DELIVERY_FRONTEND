@@ -4,27 +4,31 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import UserOrderCard from "../components/UserOrderCard";
 import OwnerOrderCard from "../components/OwnerOrderCard";
-import { setMyOrders } from "../redux/userSlice";
+import { setMyOrders, updateRealTimeOrderStatus } from "../redux/userSlice";
 
 function MyOrders() {
-  const { userData, myOrders,socket } = useSelector((state) => state.user);
+  const { userData, myOrders, socket } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-useEffect(()=>{
-  socket?.on('newOrder', (data) =>{
-    if(data.shopOrders?.owner._id == userData._id){
-      dispatch(setMyOrders([data, ...myOrders]));
-    }
-  })
+  useEffect(() => {
+    socket?.on("newOrder", (data) => {
+      if (data.shopOrders?.owner._id == userData._id) {
+        dispatch(setMyOrders([data, ...myOrders]));
+      }
+    });
 
+    socket?.on('update-status', ({orderId, shopId, status, userId})=>{
+      if(userId == userData._id){
+        dispatch(updateRealTimeOrderStatus({orderId, shopId, status, }))
+      }
+    })
 
-return () => {
-  socket?.off('newOrder')
-}
-
-}, [socket])
-
+    return () => {
+      socket?.off("newOrder");
+      socket?.off('update-status')
+    };
+  }, [socket]);
 
   return (
     <div className="w-full min-h-screen bg-[#fff9f6] flex justify-center px-4 ">
@@ -42,15 +46,11 @@ return () => {
 
         <div className="space-y-6">
           {myOrders?.map((order, index) =>
-            userData.role == "user" ? 
-            (
-              <UserOrderCard data={order} key={index}/>
-            )
-             : userData.role == "owner" ? 
-             (
+            userData.role == "user" ? (
+              <UserOrderCard data={order} key={index} />
+            ) : userData.role == "owner" ? (
               <OwnerOrderCard data={order} key={index} />
-            )
-             : null
+            ) : null
           )}
         </div>
       </div>

@@ -6,7 +6,7 @@ import { serverUrl } from "../App.jsx";
 import DeliveryBoyTracking from "./DeliveryBoyTracking.jsx";
 
 function DeliveryBoy() {
-  const { userData } = useSelector((state) => state.user);
+  const { userData, socket } = useSelector((state) => state.user);
   const [currentOrder, setCurrentOrder] = useState();
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
@@ -94,6 +94,19 @@ function DeliveryBoy() {
 
     }
   };
+
+  useEffect(()=>{
+    socket?.on('newAssignment', (data)=>{
+      if(data.sentTo == userData._id){
+        setAvailableAssignments(prev=> [...prev, data])
+      }
+    }); //4.36 min
+
+
+    return () =>{
+      socket.off('newAssignment')
+    }
+  }, [socket])
 
   useEffect(() => {
     getAssignments();

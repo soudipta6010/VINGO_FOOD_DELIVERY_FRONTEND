@@ -17,7 +17,7 @@ function OwnerOrderCard({ data }) {
       );
 
       dispatch(updateOrderStatus({ orderId, shopId, status }));
-      setAvailableBoys(result.data.availableBoys);
+      setAvailableBoys(result.data.availableBoys || []);
       console.log(result.data);
     } catch (error) {
       console.log(error);

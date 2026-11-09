@@ -11,6 +11,36 @@ function DeliveryBoy() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
+
+
+
+  useEffect(()=>{
+    if(!socket || userData.role !== "deliveryBoy") return;
+
+    let watchId;
+    if(navigator.geolocation){
+    watchId=  navigator.geolocation.watchPosition((position)=>{
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        socket.emit('updateLocation',{
+          latitude,
+          longitude,
+          userId: userData._id,
+        })
+      }),
+      (error)=>{
+        console.log(error)
+      },
+      {
+        enableHighAccuracy: "true"
+      }
+    }
+
+    return () => {
+      if(watchId)navigator.geolocation.clearWatch(watchId)
+    }
+  }, [socket, userData])
+
   const getAssignments = async () => {
     try {
       const result = await axios.get(`${serverUrl}/api/order/get-assignments`, {
@@ -100,7 +130,7 @@ function DeliveryBoy() {
       if(data.sentTo == userData._id){
         setAvailableAssignments(prev=> [...prev, data])
       }
-    }); //4.36 min
+    }); 
 
 
     return () =>{

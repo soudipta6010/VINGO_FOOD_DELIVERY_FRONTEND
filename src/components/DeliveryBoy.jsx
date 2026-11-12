@@ -11,35 +11,34 @@ function DeliveryBoy() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
+  const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null);
 
-
-
-  useEffect(()=>{
-    if(!socket || userData.role !== "deliveryBoy") return;
-
+  useEffect(() => {
+    if (!socket || userData.role !== "deliveryBoy") return;
     let watchId;
-    if(navigator.geolocation){
-    watchId=  navigator.geolocation.watchPosition((position)=>{
+    if (navigator.geolocation) {
+      (watchId = navigator.geolocation.watchPosition((position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        socket.emit('updateLocation',{
+        setDeliveryBoyLocation({lat:latitude, lon:longitude})
+        socket.emit("updateLocation", {
           latitude,
           longitude,
           userId: userData._id,
-        })
-      }),
-      (error)=>{
-        console.log(error)
-      },
-      {
-        enableHighAccuracy: "true"
-      }
+        });
+      })),
+        (error) => {
+          console.log(error);
+        },
+        {
+          enableHighAccuracy: "true",
+        };
     }
 
     return () => {
-      if(watchId)navigator.geolocation.clearWatch(watchId)
-    }
-  }, [socket, userData])
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [socket, userData]);
 
   const getAssignments = async () => {
     try {
@@ -114,29 +113,26 @@ function DeliveryBoy() {
         }
       );
       console.log("otp verified ", result.data);
-      
-      setOtp("");
 
+      setOtp("");
     } catch (error) {
       console.log("Backend error:", error.response?.data);
-    console.log("Status code:", error.response?.status);
-    console.log("Error message:", error.message);
-
+      console.log("Status code:", error.response?.status);
+      console.log("Error message:", error.message);
     }
   };
 
-  useEffect(()=>{
-    socket?.on('newAssignment', (data)=>{
-      if(data.sentTo == userData._id){
-        setAvailableAssignments(prev=> [...prev, data])
+  useEffect(() => {
+    socket?.on("newAssignment", (data) => {
+      if (data.sentTo == userData._id) {
+        setAvailableAssignments((prev) => [...prev, data]);
       }
-    }); 
+    });
 
-
-    return () =>{
-      socket.off('newAssignment')
-    }
-  }, [socket])
+    return () => {
+      socket.off("newAssignment");
+    };
+  }, [socket]);
 
   useEffect(() => {
     getAssignments();
@@ -148,17 +144,17 @@ function DeliveryBoy() {
       <div className="w-full max-w-200 flex flex-col gap-5 items-center">
         <div className="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-start items-center w-[90%] border border-orange-100 text-center gap-2">
           <h1 className="text-xl font-bold text-[#ff4d2d]">
-            Welcome, {userData.fullName}{" "}
+            Welcome, {userData.fullName}
           </h1>
           <p className="text-[#ff4d2d]">
-            {" "}
-            <span className="font-semibold">Latitude:</span>{" "}
-            {userData.location.coordinates[1]},{" "}
-            <span className="font-semibold">Longitude:</span>{" "}
-            {userData.location.coordinates[0]}{" "}
+            <span className="font-semibold">Latitude:</span>
+            {deliveryBoyLocation?.lat ?? "Fetching..."},
+            <span className="font-semibold">Longitude:</span>
+            {deliveryBoyLocation?.lat ?? "Fetching..."} 
           </p>
         </div>
 
+        {/* //5.26min */}
         {/* Available orders */}
         {/* if no current order */}
         {!currentOrder && (
@@ -217,7 +213,18 @@ function DeliveryBoy() {
               </p>
             </div>
 
-            <DeliveryBoyTracking data={currentOrder} />
+            <DeliveryBoyTracking
+              data={{
+                deliveryBoyLocation: deliveryBoyLocation || {
+                  lat: userData.location.coordinates[1],
+                  lon: userData.location.coordinates[0],
+                },
+                customerLocation: {
+                  lat: currentOrder.deliveryAddress.latitude,
+                  lon: currentOrder.deliveryAddress.longitude,
+                },
+              }}
+            />
 
             {!showOtpBox ? (
               <button

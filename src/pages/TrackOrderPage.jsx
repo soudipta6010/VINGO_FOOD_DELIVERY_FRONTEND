@@ -81,9 +81,6 @@ useEffect(()=>{
                     }
                 }}/>
                 </div>}
-
-                {/* completed 45min */}
-                
         </div>
       ))}
     </div>

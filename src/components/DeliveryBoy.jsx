@@ -154,7 +154,7 @@ function DeliveryBoy() {
           </p>
         </div>
 
-        {/* //5.26min */}
+        
         {/* Available orders */}
         {/* if no current order */}
         {!currentOrder && (

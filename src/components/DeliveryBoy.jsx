@@ -11,7 +11,11 @@ function DeliveryBoy() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
+  const [todayDeliveries, setTodayDeliveries] = useState([]);
   const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null);
+  const [loading, setLoading] = useState("false");
+  const [message, setMessage] = useState("");
+
 
   useEffect(() => {
     if (!socket || userData.role !== "deliveryBoy") return;
@@ -20,7 +24,7 @@ function DeliveryBoy() {
       (watchId = navigator.geolocation.watchPosition((position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        setDeliveryBoyLocation({lat:latitude, lon:longitude})
+        setDeliveryBoyLocation({ lat: latitude, lon: longitude });
         socket.emit("updateLocation", {
           latitude,
           longitude,
@@ -82,6 +86,7 @@ function DeliveryBoy() {
     }
   };
   const sendOtp = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/order/send-delivery-otp`,
@@ -93,6 +98,7 @@ function DeliveryBoy() {
           withCredentials: true,
         }
       );
+      setLoading(false);
       setShowOtpBox(true);
       console.log(result.data);
     } catch (error) {
@@ -100,6 +106,7 @@ function DeliveryBoy() {
     }
   };
   const verifyOtp = async () => {
+    setMessage("")
     try {
       const result = await axios.post(
         `${serverUrl}/api/order/verify-delivery-otp`,
@@ -113,12 +120,23 @@ function DeliveryBoy() {
         }
       );
       console.log("otp verified ", result.data);
+      setMessage(result.data.message)
 
       setOtp("");
     } catch (error) {
-      console.log("Backend error:", error.response?.data);
-      console.log("Status code:", error.response?.status);
-      console.log("Error message:", error.message);
+      console.log(" verify otp error:", error.message);
+    }
+  };
+  const handelTodayDeliveries = async () => {
+    try {
+      const result = await axios.get(
+        `${serverUrl}/api/order/get-today-deliveries`, {withCredentials: true});
+
+      console.log("Today's deliveries: ",result.data);
+      setTodayDeliveries(result.data);
+
+    } catch (error) {
+      console.log("Delivery Error message:", error.message);
     }
   };
 
@@ -137,6 +155,7 @@ function DeliveryBoy() {
   useEffect(() => {
     getAssignments();
     getCurrentOrder();
+    handelTodayDeliveries(); 
   }, [userData]);
   return (
     <div className="w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9fc] overflow-y-auto">
@@ -150,11 +169,16 @@ function DeliveryBoy() {
             <span className="font-semibold">Latitude:</span>
             {deliveryBoyLocation?.lat ?? "Fetching..."},
             <span className="font-semibold">Longitude:</span>
-            {deliveryBoyLocation?.lat ?? "Fetching..."} 
+            {deliveryBoyLocation?.lat ?? "Fetching..."}
           </p>
         </div>
 
-        
+        {/* today's deliveries */}
+        <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] mb-6 border border-orange-100">
+          <h1 className="text-lg font-bold mb-3 text-[#ff4d2d]">Today Deliveries</h1>
+        </div> 
+        //6.15min
+
         {/* Available orders */}
         {/* if no current order */}
         {!currentOrder && (

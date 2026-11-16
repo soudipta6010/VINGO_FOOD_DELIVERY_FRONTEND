@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App.jsx";
 import DeliveryBoyTracking from "./DeliveryBoyTracking.jsx";
+import {CartesianGrid, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar} from "recharts";
+import { ClipLoader } from "react-spinners";
 
 function DeliveryBoy() {
   const { userData, socket } = useSelector((state) => state.user);
@@ -13,7 +15,7 @@ function DeliveryBoy() {
   const [otp, setOtp] = useState("");
   const [todayDeliveries, setTodayDeliveries] = useState([]);
   const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null);
-  const [loading, setLoading] = useState("false");
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
 
@@ -43,6 +45,12 @@ function DeliveryBoy() {
       if (watchId) navigator.geolocation.clearWatch(watchId);
     };
   }, [socket, userData]);
+
+
+  
+    const ratePerDelivery =50;
+    const totalEarning = todayDeliveries.reduce((sum, d)=> sum + d.count * ratePerDelivery, 0)
+
 
   const getAssignments = async () => {
     try {
@@ -85,8 +93,13 @@ function DeliveryBoy() {
       console.log(error);
     }
   };
+
+
   const sendOtp = async () => {
+    if (!currentOrder || loading) return;
+
     setLoading(true);
+    setMessage("");
     try {
       const result = await axios.post(
         `${serverUrl}/api/order/send-delivery-otp`,
@@ -98,11 +111,13 @@ function DeliveryBoy() {
           withCredentials: true,
         }
       );
-      setLoading(false);
+      console.log("OTP sent successfully: ",result.data);
       setShowOtpBox(true);
-      console.log(result.data);
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log("send otp error: ",error);
+      setLoading(false);
+
     }
   };
   const verifyOtp = async () => {
@@ -120,13 +135,16 @@ function DeliveryBoy() {
         }
       );
       console.log("otp verified ", result.data);
-      setMessage(result.data.message)
-
+      setMessage(result.data.message);
       setOtp("");
+
+      location.reload()
     } catch (error) {
       console.log(" verify otp error:", error.message);
     }
   };
+
+  
   const handelTodayDeliveries = async () => {
     try {
       const result = await axios.get(
@@ -176,8 +194,24 @@ function DeliveryBoy() {
         {/* today's deliveries */}
         <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] mb-6 border border-orange-100">
           <h1 className="text-lg font-bold mb-3 text-[#ff4d2d]">Today Deliveries</h1>
+
+          {/* charts */}
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={todayDeliveries}>
+              <CartesianGrid strokeDasharray="3 3"/>
+              <XAxis dataKey="hour" tickFormatter={(h)=>`${h}:00`}/>
+              <YAxis  allowDecimals={false}/>
+              <Tooltip formatter={(value)=> [value,"orders"]} labelFormatter={(label)=>`${label}:00`}/>
+              <Bar dataKey="count" fill="#ff4d2d"/>
+            </BarChart>
+          </ResponsiveContainer>
+
+          <div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center">
+            <h1 className="text-xl font-semibold text-gray-800 mb-2">Today's Earning</h1>
+            <span className="text-3xl font-bold text-green-600">₹{totalEarning}</span>
+          </div>
         </div> 
-        //6.15min
+        
 
         {/* Available orders */}
         {/* if no current order */}
@@ -254,23 +288,27 @@ function DeliveryBoy() {
               <button
                 className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200"
                 onClick={sendOtp}
+                disabled ={loading}
               >
-                Mark as delivered
+                {loading ? <ClipLoader size={20} color="white"/> : "Mark As Delivered"}
               </button>
             ) : (
               <div className="mt-4 p-4 border rounded-xl bg-gray-50">
                 <p className="text-sm font-semibold mb-2">
-                  Enter OTP send to{" "}
+                  Enter OTP send to {" "}
                   <span className="text-orange-500">
                     {currentOrder.user.fullName}
-                  </span>{" "}
+                  </span>
                 </p>
                 <input
                   type="text"
                   className="w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Enter OTP"
                   onChange={(e) => setOtp(e.target.value)}
+                  value={otp}
                 />
+                {message && <p className="text-center text-green-400 text-2xl">{message}</p>}
+                  
                 <button
                   className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all"
                   onClick={verifyOtp}

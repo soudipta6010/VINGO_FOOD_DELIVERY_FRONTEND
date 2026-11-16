@@ -12,7 +12,7 @@ import { setSearchItems, setUserData } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 function Nav() {
-  const { userData, currentCity, cartItems } = useSelector(
+  const { userData, currentCity, cartItems, myOrders } = useSelector(
     (state) => state.user
   );
   const { myShopData } = useSelector((state) => state.owner);
@@ -153,9 +153,9 @@ function Nav() {
               >
                 <TbReceiptRupeeFilled size={20} />
                 <span>My Orders</span>
-                <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
+                {/* <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
                   0
-                </span>
+                </span> */}
               </div>
             )}
             {/* for small screen */}
@@ -165,9 +165,9 @@ function Nav() {
             >
               <TbReceiptRupeeFilled size={20} />
 
-              <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
+              {/* <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-1.5 py-px ">
                 0
-              </span>
+              </span> */}
             </div>
           </>
         ) : (
